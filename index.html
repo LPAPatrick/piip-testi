@@ -355,13 +355,13 @@
             }
         }
 
-        function beep(frequency = 880, duration = 0.16, gainValue = 0.65) {
+        function beep(frequency = 1400, duration = 0.10, gainValue = 1.0) {
             initAudio();
 
             const oscillator = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
-            oscillator.type = 'sine';
+            oscillator.type = 'square';
             oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
 
             gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
@@ -514,7 +514,7 @@
                 }
             } else {
                 shuttle += 1;
-                beep(880, 0.14, 0.62);
+                beep(1400, 0.10, 1.0); setTimeout(() => beep(1400, 0.10, 1.0), 100);
                 stateText.innerText = 'Käänny ja jatka';
             }
 
