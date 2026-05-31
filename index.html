@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <title>PIIP-testi 20 m</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html {
+            min-height: 100%;
+            background: #020617;
+        }
+
+        body {
+            min-height: 100dvh;
+            padding: calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+            background: radial-gradient(circle at top, #1d4ed8 0%, #0f172a 46%, #020617 100%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
+            overscroll-behavior: none;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        header {
+            text-align: center;
+        }
+
+        .tag {
+            color: #bfdbfe;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            font-size: 36px;
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .state {
+            text-align: center;
+            color: #bfdbfe;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-height: 20px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 24px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .status-card {
+            padding: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .metric {
+            background: #111827;
+            border-radius: 18px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .metric-label {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 42px;
+            font-weight: 950;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .metric-small {
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 800;
+            margin-top: 6px;
+        }
+
+        .progress-card {
+            padding: 22px;
+        }
+
+        .time-title {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 950;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .time-left {
+            text-align: center;
+            font-size: 84px;
+            font-weight: 950;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 18px;
+        }
+
+        .progress-shell {
+            width: 100%;
+            height: 38px;
+            background: #020617;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.28);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+            border-radius: 999px;
+            transform-origin: left center;
+            transform: scaleX(1);
+            transition: transform 0.08s linear;
+        }
+
+        .next-line {
+            margin-top: 12px;
+            text-align: center;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .controls {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        button {
+            border: none;
+            border-radius: 18px;
+            padding: 18px 14px;
+            font-size: 19px;
+            font-weight: 950;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-start {
+            background: #22c55e;
+            color: #052e16;
+        }
+
+        .btn-pause {
+            background: #f59e0b;
+            color: #451a03;
+        }
+
+        .btn-reset,
+        .btn-fullscreen {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            font-size: 15px;
+            padding: 13px;
+        }
+
+        .btn-reset {
+            grid-column: span 1;
+        }
+
+        .btn-fullscreen {
+            grid-column: span 1;
+        }
+
+        .info-card {
+            padding: 15px;
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        .info-card strong {
+            color: #93c5fd;
+        }
+
+        .countdown {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            background: rgba(2, 6, 23, 0.88);
+            font-size: 120px;
+            font-weight: 950;
+            color: #ffffff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 380px) {
+            h1 { font-size: 31px; }
+            .time-left { font-size: 70px; }
+            .metric-value { font-size: 35px; }
+            button { font-size: 17px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="countdown" id="countdownOverlay">5</div>
+
+    <main class="app">
+        <header>
+            <div class="tag">20 m shuttle run</div>
+            <h1>PIIP-testi</h1>
+        </header>
+
+        <div class="state" id="stateText">Valmis aloittamaan</div>
+
+        <section class="card status-card">
+            <div class="grid">
+                <div class="metric">
+                    <div class="metric-label">Taso</div>
+                    <div class="metric-value" id="levelValue">1</div>
+                    <div class="metric-small" id="speedValue">8.5 km/h</div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">Väli</div>
+                    <div class="metric-value" id="shuttleValue">1</div>
+                    <div class="metric-small" id="shuttlesInLevel">/ 7</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card progress-card">
+            <div class="time-title">Aikaa seuraavaan piippiin</div>
+            <div class="time-left" id="timeLeft">8.5</div>
+
+            <div class="progress-shell">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="next-line" id="intervalInfo">Intervalli: 8.47 s / 20 m</div>
+        </section>
+
+        <section class="card controls">
+            <button class="btn-start" id="startButton" onclick="startTest()">START</button>
+            <button class="btn-pause" onclick="pauseTest()">PAUSE</button>
+            <button class="btn-reset" onclick="resetTest()">Nollaa</button>
+            <button class="btn-fullscreen" onclick="toggleFullscreen()">Koko näyttö</button>
+        </section>
+
+        <section class="card info-card">
+            <strong>Äänet:</strong> ensimmäinen START-painallus aktivoi äänen iPhonessa. Pidä puhelin pois äänettömältä ja nosta äänenvoimakkuus.
+        </section>
+    </main>
+
+    <script>
+        // 20 m beep test / multistage fitness test.
+        // Level 1 starts at 8.5 km/h, speed rises by 0.5 km/h per level.
+        // Time per 20 m = 72 / speed(km/h).
+        // Shuttle counts are derived from target level duration of about 60 seconds,
+        // matching the common 20 m MSFT/Leger structure.
+        const protocol = Array.from({ length: 21 }, (_, i) => {
+            const level = i + 1;
+            const speed = 8.0 + level * 0.5;
+            const interval = 72 / speed;
+            const shuttles = Math.round(60 / interval);
+            return { level, speed, shuttles };
+        });
+
+        let levelIndex = 0;
+        let shuttle = 1;
+        let running = false;
+        let countdownRunning = false;
+        let intervalStartTime = null;
+        let pausedRemainingMs = null;
+        let animationFrame = null;
+        let audioCtx = null;
+
+        const levelValue = document.getElementById('levelValue');
+        const speedValue = document.getElementById('speedValue');
+        const shuttleValue = document.getElementById('shuttleValue');
+        const shuttlesInLevel = document.getElementById('shuttlesInLevel');
+        const timeLeft = document.getElementById('timeLeft');
+        const progressFill = document.getElementById('progressFill');
+        const intervalInfo = document.getElementById('intervalInfo');
+        const stateText = document.getElementById('stateText');
+        const startButton = document.getElementById('startButton');
+        const countdownOverlay = document.getElementById('countdownOverlay');
+
+        function getCurrentStage() {
+            return protocol[levelIndex];
+        }
+
+        function getIntervalMs() {
+            return (72 / getCurrentStage().speed) * 1000;
+        }
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function beep(frequency = 880, duration = 0.16, gainValue = 0.65) {
+            initAudio();
+
+            const oscillator = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(gainValue, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+            oscillator.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + duration + 0.02);
+        }
+
+        function levelBeep() {
+            beep(660, 0.12, 0.6);
+            setTimeout(() => beep(990, 0.20, 0.7), 160);
+        }
+
+        function updateDisplay(remainingMs = getIntervalMs()) {
+            const stage = getCurrentStage();
+            const intervalMs = getIntervalMs();
+            const remainingSeconds = Math.max(0, remainingMs / 1000);
+            const progress = Math.max(0, Math.min(1, remainingMs / intervalMs));
+
+            levelValue.innerText = stage.level;
+            speedValue.innerText = stage.speed.toFixed(1) + ' km/h';
+            shuttleValue.innerText = shuttle;
+            shuttlesInLevel.innerText = '/ ' + stage.shuttles;
+            timeLeft.innerText = remainingSeconds.toFixed(1);
+            progressFill.style.transform = 'scaleX(' + progress + ')';
+            intervalInfo.innerText = 'Intervalli: ' + (intervalMs / 1000).toFixed(2) + ' s / 20 m';
+        }
+
+        function startTest() {
+            initAudio();
+
+            if (running || countdownRunning) return;
+
+            if (pausedRemainingMs !== null) {
+                resumeFromPause();
+                return;
+            }
+
+            startCountdown(5);
+        }
+
+        function startCountdown(seconds) {
+            countdownRunning = true;
+            stateText.innerText = 'Lähtölaskenta';
+            countdownOverlay.style.display = 'flex';
+
+            let current = seconds;
+            countdownOverlay.innerText = current;
+            beep(660, 0.10, 0.45);
+
+            const countdownTimer = setInterval(() => {
+                current -= 1;
+
+                if (current > 0) {
+                    countdownOverlay.innerText = current;
+                    beep(660, 0.10, 0.45);
+                } else {
+                    clearInterval(countdownTimer);
+                    countdownOverlay.style.display = 'none';
+                    countdownRunning = false;
+                    beginRunning(true);
+                }
+            }, 1000);
+        }
+
+        function beginRunning(playStartBeep) {
+            running = true;
+            startButton.innerText = 'KÄYNNISSÄ';
+            stateText.innerText = 'Juokse seuraavalle viivalle';
+            intervalStartTime = performance.now();
+
+            if (playStartBeep) {
+                beep(990, 0.22, 0.75);
+            }
+
+            tick();
+        }
+
+        function resumeFromPause() {
+            running = true;
+            startButton.innerText = 'KÄYNNISSÄ';
+            stateText.innerText = 'Jatkuu';
+
+            const now = performance.now();
+            const intervalMs = getIntervalMs();
+            intervalStartTime = now - (intervalMs - pausedRemainingMs);
+            pausedRemainingMs = null;
+
+            beep(880, 0.14, 0.55);
+            tick();
+        }
+
+        function pauseTest() {
+            if (!running) return;
+
+            const now = performance.now();
+            const elapsed = now - intervalStartTime;
+            pausedRemainingMs = Math.max(0, getIntervalMs() - elapsed);
+
+            running = false;
+            startButton.innerText = 'JATKA';
+            stateText.innerText = 'Tauolla';
+
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
+
+            updateDisplay(pausedRemainingMs);
+        }
+
+        function resetTest() {
+            running = false;
+            countdownRunning = false;
+            levelIndex = 0;
+            shuttle = 1;
+            intervalStartTime = null;
+            pausedRemainingMs = null;
+            startButton.innerText = 'START';
+            stateText.innerText = 'Valmis aloittamaan';
+            countdownOverlay.style.display = 'none';
+
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
+
+            updateDisplay(getIntervalMs());
+        }
+
+        function advanceShuttle() {
+            const stage = getCurrentStage();
+
+            if (shuttle >= stage.shuttles) {
+                if (levelIndex < protocol.length - 1) {
+                    levelIndex += 1;
+                    shuttle = 1;
+                    levelBeep();
+                    stateText.innerText = 'Uusi taso: ' + getCurrentStage().level;
+                } else {
+                    running = false;
+                    stateText.innerText = 'Testi päättynyt';
+                    startButton.innerText = 'START';
+                    return;
+                }
+            } else {
+                shuttle += 1;
+                beep(880, 0.14, 0.62);
+                stateText.innerText = 'Käänny ja jatka';
+            }
+
+            intervalStartTime = performance.now();
+        }
+
+        function tick() {
+            if (!running) return;
+
+            const now = performance.now();
+            const intervalMs = getIntervalMs();
+            const elapsed = now - intervalStartTime;
+            const remainingMs = intervalMs - elapsed;
+
+            if (remainingMs <= 0) {
+                advanceShuttle();
+                updateDisplay(getIntervalMs());
+            } else {
+                updateDisplay(remainingMs);
+            }
+
+            animationFrame = requestAnimationFrame(tick);
+        }
+
+        function toggleFullscreen() {
+            const element = document.documentElement;
+
+            if (!document.fullscreenElement && element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+
+        updateDisplay(getIntervalMs());
+    </script>
+</body>
+</html>
